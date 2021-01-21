@@ -3,7 +3,7 @@
     <md-toolbar class="md-accent" style="background-color: #a03037">
       <div class="outter-container">
         <div class="left-container">
-          <div class="icon">
+          <div class="icon" @click="gotoHome">
             <h2 class="md-title">Bookstore</h2>
           </div>
           <div class="search">
@@ -18,9 +18,9 @@
             </md-autocomplete>
           </div>
         </div>
-        <div class="right-container">
-          <span style="padding-right:10px">Cart</span>
-          <v-badge dark :content="messages" color="black" overlap>
+        <div class="right-container" @click="gotoCart">
+          <span style="padding-right: 10px">Cart</span>
+          <v-badge dark :content="messages" color="#E5737" overlap>
             <v-icon> mdi-cart </v-icon>
           </v-badge>
         </div>
@@ -29,6 +29,7 @@
   </div>
 </template>
 <script>
+import { eventBus } from "../../main";
 export default {
   name: "Header",
   data() {
@@ -37,9 +38,22 @@ export default {
       messages: 0,
     };
   },
+  methods: {
+    gotoCart: function () {
+      this.$router.push("/dashboard/cart");
+    },
+    gotoHome: function () {
+      this.$router.push("/dashboard/books");
+    },
+  },
+  created() {
+    eventBus.$on("addToCart", () => {
+      this.messages++;
+    });
+  },
 };
 </script>
-<style>
+<style scoped>
 .md-toolbar {
   padding: 0% 10%;
 }
@@ -48,6 +62,7 @@ export default {
 }
 .icon {
   padding-right: 50px;
+  cursor: pointer;
 }
 .searchbox {
   height: 10px;
@@ -66,24 +81,28 @@ export default {
 .right-container {
   display: flex;
   align-items: center;
+  cursor: pointer;
+}
+.v-badge__badge {
+  background-color: burlywood !important;
 }
 @media only screen and (max-width: 900px) {
   .searchbox {
-  height: 8px;
-  width: 250px;
-}
+    height: 8px;
+    width: 250px;
+  }
 }
 @media only screen and (max-width: 550px) {
   .searchbox {
-      width: 100%;
-  height: 5px;
-  width: 150px;
-}
-.md-toolbar {
-  padding: 0% 0%;
-}
-.icon {
-  padding-right: 10px;
-}
+    width: 100%;
+    height: 5px;
+    width: 150px;
+  }
+  .md-toolbar {
+    padding: 0% 0%;
+  }
+  .icon {
+    padding-right: 10px;
+  }
 }
 </style>
