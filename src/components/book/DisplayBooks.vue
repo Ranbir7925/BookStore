@@ -6,10 +6,6 @@
           <div class="card-items">
             <div class="book-section">
               <img src="../../assets/book1.jpg" />
-              <!-- <img v-bind:src="require('../../assets/'+ book.bookImage.jpg)" /> -->
-              <!-- <img src="../../assets/book0.jpg" alt=""> -->
-              <!-- <img :src="getImgUrl(book0)" v-bind:alt="book.bookImage"> -->
-              <!-- <img :src="require(`../../assets/${book.bookImage}.jpg`)"> -->
             </div>
             <div class="book-info">
               <label class="content-part">{{ book.bookName }}</label>
@@ -17,10 +13,8 @@
               <label class="description-part">{{ `Rs.` + book.price }}</label>
             </div>
             <div class="buttons">
-              <md-button class="md-raised md-primary right" 
-               @click="add" >add to bag</md-button
-              >
-              <md-button class="md-raised" @click="add">wishlist</md-button>
+              <Bag v-bind:bookId="book._id"/>
+              <Wishlist v-bind:bookId="book._id"/>
             </div>
           </div>
         </md-card>
@@ -29,40 +23,31 @@
   </div>
 </template>
 <script>
-import bookService from "../../service/bookService";
+import Bag from "./Bag";
+import Wishlist from "./Wishlist";
 export default {
   name: "DisplayBooks",
   props: ["bookList"],
+  components: { Bag, Wishlist },
   data() {
     return {
-      // addedtocart: "",
     };
   },
   methods: {
-    add: function () {
-      // this.addedtocart = true;
-      const cartData = this.book;
-      console.log("clicked",cartData);
-      bookService.addToCart(cartData).then((response) => {
-        console.log(response);
-      })
-      .catch((err)=>{
-        console.log(err);
-      })
-    },
     // getImgUrl(pic) {
     //   return require("../../assets/" + pic);
     // },
   },
 };
 </script>
-<style >
+<style scoped>
 .display-books {
   display: flex;
   flex-direction: column;
 }
 .books-container {
-  padding: 0% 9%;
+  background-color: white;
+  padding: 0% 8%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -89,16 +74,16 @@ img {
   flex-direction: column;
 }
 .buttons {
+  
   padding: 5px 15px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  color: #a03037 !important;
 }
-.right {
-  background-color: #a03037 !important;
-}
+
 .md-card {
-  width: 290px;
+  width: 255px;
   height: 350px;
   margin: 8px;
 }
