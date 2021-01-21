@@ -5,6 +5,7 @@ import SignUp from '../components/user/SignUp'
 import Dashboard from '../components/book/Dashboard'
 import Books from '../components/book/Books'
 import Cart from '../components/Cart/BookCart'
+import Order from '../components/Cart/OrderPlaced'
 
 Vue.use(Router)
 
@@ -19,6 +20,7 @@ const router = new Router({
             children: [
                 { path: 'books', component: Books },
                 { path: 'cart', component: Cart },
+                { path: 'order', component: Order },
             ]
         }
     ]
