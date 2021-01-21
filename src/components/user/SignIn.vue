@@ -64,6 +64,7 @@ export default {
     email: "",
     password: "",
     message: "",
+    hardCodedtoken:"",
     rules: {
       required: (value) => !!value || "Required.",
       min8: (v) => v.length >= 8 || "Min 8 characters",
@@ -80,9 +81,12 @@ export default {
         userService
           .loginUser(signInData)
           .then((res) => {
-            console.log(res);
+            this.hardCodedtoken=res.data.result.accessToken;
+            console.log(res,this.hardCodedtoken);
+
             this.showSnackbar = true;
             this.message = "Login Successful";
+            localStorage.setItem("access_token", this.hardCodedtoken);
             setTimeout(() => this.$router.push("/dashboard/books"), 2000);
           })
           .catch((err) => {
