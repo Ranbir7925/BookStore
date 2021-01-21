@@ -6,5 +6,12 @@ class NoteService{
     addToCart(bookId){
         return axiosService.post(`add_cart_item/${bookId}`)
     }
+    addToWishlist(bookId){
+        return axiosService.post(`add_wish_list/${bookId}`)
+    }
+    getFromCart(){
+        return axiosService.get('get_cart_items')
+    }
+
 }
 export default new NoteService

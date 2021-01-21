@@ -1,24 +1,30 @@
 import axios from "axios"
 
 const baseUrl = "https://backend-bookstore.herokuapp.com/bookstore_user/";
-const headers= {
-    'Content-Type': 'application/json',
-    'Authorization':localStorage.getItem('access_token')
-}
+// const headers= {
+//     'Content-Type': 'application/json',
+//     'Authorization':localStorage.getItem("access_token")
+// }
 export default {
-    post(url, data) {
+    post(requestUrl,data) {
         return axios({
             method: 'post',
-            url: `${baseUrl}${url}`,
-            data: data,
-            headers
+            url: `${baseUrl}${requestUrl}`,
+            data:data,
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': localStorage.getItem("access_token")
+            }
         })
     },
-    get(url){
+    get(requestUrl) {
         return axios({
             method: 'get',
-            url:`${baseUrl}${url}`,
-            headers
+            url: `${baseUrl}${requestUrl}`,
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': localStorage.getItem("access_token")
+            }
         })
     }
-  }
+}
