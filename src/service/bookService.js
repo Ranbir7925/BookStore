@@ -12,6 +12,18 @@ class NoteService{
     getFromCart(){
         return axiosService.get('get_cart_items')
     }
+    placeOrder(orderDetails){
+        return axiosService.post('add/order',orderDetails)
+    }
+    deleteCartItem(productId){
+        return axiosService.delete(`remove_cart_item/${productId}`)
+    }
+    setQuantity(productId,data){
+        return axiosService.put(`cart_item_quantity/${productId}`,data)
+    }
+    setCustomerDetails(details){
+        return axiosService.put(`edit_user`,details)
+    }
 
 }
 export default new NoteService

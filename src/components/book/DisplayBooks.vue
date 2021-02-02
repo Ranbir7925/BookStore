@@ -1,7 +1,7 @@
 <template>
   <div class="display-books">
     <div class="books-container">
-      <div class="book-card" v-for="book in bookList" :key="book._id">
+      <div class="book-card" v-for="book in pageOfItems" :key="book._id">
         <md-card md-with-hover>
           <div class="card-items">
             <div class="book-section">
@@ -13,30 +13,35 @@
               <label class="description-part">{{ `Rs.` + book.price }}</label>
             </div>
             <div class="buttons">
-              <Bag v-bind:bookId="book._id"/>
-              <Wishlist v-bind:bookId="book._id"/>
+              <Bag v-bind:bookId="book._id" />
             </div>
           </div>
         </md-card>
       </div>
     </div>
+    <jw-pagination
+      :items="bookList"
+      :pageSize="8"
+      @changePage="onChangePage"
+      class="pagination"
+    ></jw-pagination>
   </div>
 </template>
 <script>
 import Bag from "./Bag";
-import Wishlist from "./Wishlist";
 export default {
   name: "DisplayBooks",
   props: ["bookList"],
-  components: { Bag, Wishlist },
+  components: { Bag,  },
   data() {
     return {
+      pageOfItems: [],
     };
   },
   methods: {
-    // getImgUrl(pic) {
-    //   return require("../../assets/" + pic);
-    // },
+    onChangePage(pageOfItems) {
+      this.pageOfItems = pageOfItems;
+    },
   },
 };
 </script>
@@ -74,7 +79,6 @@ img {
   flex-direction: column;
 }
 .buttons {
-  
   padding: 5px 15px;
   display: flex;
   flex-direction: row;
@@ -104,5 +108,21 @@ img {
   font-size: 16px;
   font-weight: 500;
   cursor: text;
+}
+
+.pagination {
+  margin: 0px;
+  padding: 0px;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+@media only screen and (max-width: 550px) {
+  /* .display-books{
+    height: 200vh;
+  } */
+  .books-container {
+    justify-content: center;
+}
 }
 </style>

@@ -84,4 +84,14 @@ td {
 .bottons {
   margin: 30px 0px;
 }
+
+@media only screen and (max-width: 550px) {
+.order-text {
+    font-size: medium;
+    padding: 15px 0;
+}
+.components {
+    height: 130vh;
+}
+}
 </style>

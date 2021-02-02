@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div>
     <md-toolbar class="md-accent" style="background-color: #a03037">
       <div class="outter-container">
         <div class="left-container">
@@ -26,6 +27,7 @@
         </div>
       </div>
     </md-toolbar>
+    </div>
   </div>
 </template>
 <script>
@@ -50,12 +52,18 @@ export default {
     eventBus.$on("addToCart", () => {
       this.messages++;
     });
+    eventBus.$on("cartData", (data) => {
+      this.messages=data;
+      console.log(data);
+    });
   },
 };
 </script>
 <style scoped>
 .md-toolbar {
+  position: fixed;
   padding: 0% 10%;
+  z-index: 20;
 }
 .md-title {
   margin: 0 10px !important;
@@ -103,6 +111,9 @@ export default {
   }
   .icon {
     padding-right: 10px;
+  }
+  .right-container {
+    padding-right: 5px;
   }
 }
 </style>

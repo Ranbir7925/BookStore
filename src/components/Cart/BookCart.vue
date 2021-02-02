@@ -5,36 +5,61 @@
         <div class="cart-title">
           <h2>My Cart</h2>
         </div>
-        <div class="book">
-          <div class="book-image">
-            <img src="../../assets/book1.jpg" />
-          </div>
-          <div class="book-details">
-            <div class="inner-container">
-              <label>{{ bookData.bookName }}</label>
-              <label>by {{ bookData.author }}</label>
-              <label>Rs.{{ bookData.price }}</label>
-            </div>
-            <div class="book-ammount">
-              <v-btn icon small>
-                <v-icon small>mdi-minus</v-icon>
-              </v-btn>
-              <div class="counter-display">1</div>
-              <v-btn icon small>
-                <v-icon small>mdi-plus</v-icon>
-              </v-btn>
+        <div class="orderedBook">
+          <div
+            class="orderedBook-card"
+            v-for="book in OrderedBookList"
+            :key="book._id"
+          >
+            <div class="book">
+              <div class="book-image">
+                <img src="../../assets/book1.jpg" />
+              </div>
+              <div class="book-details">
+                <div class="inner-container">
+                  <label>{{ book.product_id.bookName }}</label>
+                  <label>by {{ book.product_id.author }}</label>
+                  <label>Rs.{{ book.product_id.price }}</label>
+                </div>
+                <div class="book-ammount">
+                  <v-btn
+                    icon
+                    small
+                    @click="
+                      book.quantityToBuy--,
+                        editQuantity(book._id, book.quantityToBuy)
+                    "
+                  >
+                    <v-icon small>mdi-minus</v-icon>
+                  </v-btn>
+                  <div class="counter-display">{{ book.quantityToBuy }}</div>
+                  <v-btn
+                    icon
+                    small
+                    @click="
+                      book.quantityToBuy++,
+                        editQuantity(book._id, book.quantityToBuy)
+                    "
+                  >
+                    <v-icon small>mdi-plus</v-icon>
+                  </v-btn>
+                </div>
+                <md-button @click="removeFromCart(book._id)">remove</md-button>
+              </div>
             </div>
           </div>
         </div>
         <div class="buttons">
-          <v-btn dark color="red darken-4">place order</v-btn>
+          <v-btn dark color="red darken-4" @click="showAddress = true"
+            >place order</v-btn
+          >
         </div>
       </div>
       <div class="address">
         <div class="cart-title">
           <h2>Customer Details</h2>
         </div>
-        <div class="left-container">
+        <div class="left-container" v-if="showAddress == true">
           <v-form ref="form">
             <div class="container-1">
               <v-text-field
@@ -105,7 +130,7 @@
             <div class="container-5">
               <div class="inner-left">
                 <label>Type</label>
-                <v-radio-group row>
+                <v-radio-group row v-model="radioValue">
                   <v-radio
                     label="Home"
                     color="red darken-3"
@@ -134,20 +159,32 @@
         <div class="cart-title">
           <h2>Order Summery</h2>
         </div>
-        <div class="book">
-          <div class="book-image">
-            <img src="../../assets/book1.jpg" />
-          </div>
-          <div class="book-details">
-            <div class="inner-container">
-              <label>{{ bookData.bookName }}</label>
-              <label>by {{ bookData.author }}</label>
-              <label>Rs.{{ bookData.price }}</label>
+        <div v-if="showOrder == true">
+          <div class="orderedBook">
+            <div
+              class="orderedBook-card-summery"
+              v-for="book in OrderedBookList"
+              :key="book._id"
+            >
+              <div class="book">
+                <div class="book-image">
+                  <img src="../../assets/book1.jpg" />
+                </div>
+                <div class="book-details">
+                  <div class="inner-container">
+                    <label>{{ book.product_id.bookName }}</label>
+                    <label>by {{ book.product_id.author }}</label>
+                    <label>Rs.{{ book.product_id.price }}</label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="buttons">
-          <v-btn dark color="red darken-4">checkout</v-btn>
+          <div class="buttons">
+            <v-btn dark color="red darken-4" @click="placeOrder"
+              >checkout</v-btn
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -155,11 +192,13 @@
 </template>
 <script>
 import bookService from "../../service/bookService";
+import { eventBus } from "../../main";
 export default {
   name: "BookCart",
   data: () => ({
-    book:[],
-    bookData:"",
+    radioValue: "",
+    OrderedBookList: [],
+    bookData: "",
     showSnackbar: false,
     message: "",
     name: "",
@@ -169,6 +208,8 @@ export default {
     city: "",
     landmark: "",
     address: "",
+    showAddress: false,
+    showOrder: false,
     rules: {
       required: (value) => !!value || "Required.",
       min6: (v) => v.length >= 6 || "Pin Code should be of 6 digits",
@@ -180,25 +221,57 @@ export default {
     validate() {
       if (this.$refs.form.validate()) {
         const customerData = {
-          name: this.name,
-          phoneNumber: this.phoneNumber,
-          pin: this.pin,
-          locality: this.locality,
-          address: this.address,
-          city: this.city,
-          landmark: this.landmark,
+          addressType: this.radioValue,
+          fullAddress: this.address,
+          city: this.locality,
+          state: this.city,
         };
+        this.showOrder = true;
         console.log(customerData);
+        bookService.setCustomerDetails(customerData).then((response) => {
+          console.log(response);
+        });
       }
     },
     getItemFromCart: function () {
       bookService.getFromCart().then((response) => {
-        this.book = response.data.result;
-        this.bookData = this.book[this.book.length-1].product_id
-        // this.book = this.book[this.book[this.length -1]]
-        console.log(this.book);
-        console.log(this.bookData);
-        // console.log(response);
+        this.OrderedBookList = response.data.result;
+        console.log(this.OrderedBookList.length);
+        eventBus.$emit("cartData", this.OrderedBookList.length);
+      });
+    },
+    editQuantity(id, quality) {
+      if (quality <= 0) {
+        this.removeFromCart(id);
+      } else {
+        const data = {
+          quantityToBuy: quality,
+        };
+        bookService.setQuantity(id, data).then((response) => {
+          console.log(response);
+        });
+      }
+    },
+
+    placeOrder: function () {
+      let orderData = {
+        product_id: this.bookData._id,
+        product_name: this.bookData.bookName,
+        product_quantity: this.bookData.quantity,
+        product_price: this.bookData.price,
+      };
+      let orders = [orderData];
+      console.log({ orders }, this.bookData);
+      bookService.placeOrder(orders).then((response) => {
+        console.log(response);
+      });
+    },
+
+    removeFromCart(data) {
+      console.log("delete", data);
+      bookService.deleteCartItem(data).then((response) => {
+        console.log(response);
+        this.getItemFromCart();
       });
     },
   },
@@ -210,7 +283,7 @@ export default {
 
 <style scoped>
 .cointainer {
-  padding-top: 3%;
+  padding-top: 10%;
 }
 lable {
   margin-bottom: 10px;
@@ -219,7 +292,7 @@ lable {
   display: flex;
   margin-left: 8%;
   padding: 20px 40px;
-  height: 300px;
+  /* height: 300px; */
   width: 65%;
   flex-direction: column;
   border: 1px solid #e5e5e5;
@@ -231,7 +304,6 @@ lable {
   margin-left: 8%;
   padding: 20px 40px;
   width: 65%;
-  height: 570px;
   flex-direction: column;
   border: 1px solid #e5e5e5;
   justify-content: space-between;
@@ -245,7 +317,6 @@ lable {
   flex-direction: column;
   border: 1px solid #e5e5e5;
   justify-content: space-between;
-  height: 280px;
 }
 
 .book {
@@ -268,6 +339,9 @@ lable {
   padding-top: 5px;
   display: flex;
   flex-direction: column;
+}
+.orderedBook-card-summery {
+  margin: 10px;
 }
 .counter-display {
   height: 30px;
@@ -312,5 +386,49 @@ button {
 .radio-btn {
   display: flex;
   padding-top: 5px;
+}
+
+/* .orderedBook {
+  overflow: auto;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+}
+.orderedBook::-webkit-scrollbar {
+  display: none;
+} */
+
+@media only screen and (max-width: 550px) {
+  .cartBook {
+    margin: 8%;
+    padding: 15px 20px;
+    /* height: 273px; */
+    width: 85%;
+  }
+  .address {
+    margin-top: 40px;
+    margin-left: 8%;
+    padding: 15px 10px;
+    width: 85%;
+  }
+  .book-details {
+    margin-left: 40px;
+  }
+  .md-button {
+    height: 30px;
+  }
+  .buttons {
+    justify-content: center;
+  }
+  .order-details {
+    margin-top: 40px;
+    display: flex;
+    margin-left: 8%;
+    padding: 10px 20px;
+    width: 85%;
+    flex-direction: column;
+    border: 1px solid #e5e5e5;
+    justify-content: space-between;
+  }
 }
 </style>

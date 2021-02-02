@@ -87,6 +87,7 @@ export default {
   align-items: center;
   flex-direction: row;
   height: 60px;
+  margin-top: 55px;
 }
 span {
   opacity: 0.5;
@@ -105,5 +106,21 @@ span {
 .dropdown {
   height: 35px;
   width: 200px;
+}
+
+@media only screen and (max-width: 550px) {
+  .outter {
+    padding: 10px;
+  }
+  .book-count {
+    font-size: x-large;
+  }
+  .dropdown {
+    height: 38px;
+    width: 170px;
+  }
+  .books-container {
+    justify-content: center;
+  }
 }
 </style>
